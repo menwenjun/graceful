@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"sync"
 	"syscall"
 )
@@ -103,6 +104,7 @@ func (g *Manager) doShutdownJob(f ShtdownJob) {
 		if err := recover(); err != nil {
 			msg := fmt.Errorf("panic in shutdown job: %v", err)
 			g.logger.Error(msg)
+			debug.PrintStack()
 			g.lock.Lock()
 			g.errors = append(g.errors, msg)
 			g.lock.Unlock()
@@ -130,6 +132,7 @@ func (g *Manager) AddRunningJob(f RunningJob) {
 			if err := recover(); err != nil {
 				msg := fmt.Errorf("panic in running job: %v", err)
 				g.logger.Error(msg)
+				debug.PrintStack()
 				g.lock.Lock()
 				g.errors = append(g.errors, msg)
 				g.lock.Unlock()
